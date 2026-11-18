@@ -1,0 +1,60 @@
+clip-path: polygon(0 0, 100% 0, 50% 62%);
+    transform-origin: top;
+    transition: 1s;
+    z-index: 3;
+    border-top: 1px solid #fff1cf;
+    filter: drop-shadow(0 5px 5px #8b6038);
+}
+
+/* DÂY KIM TUYẾN */
+
+.gold-string {
+    position: absolute;
+    left: 0;
+    top: 53%;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, #9b7137, #fff1b8, #b58a4a);
+    box-shadow: 0 0 6px #d4aa65;
+    z-index: 4;
+}
+
+/* SÁP NIÊM PHONG */
+
+.seal {
+    position: absolute;
+    left: 50%;
+    top: 68%;
+    transform: translate(-50%, -50%);
+    width: 92px;
+    height: 92px;
+    border-radius: 45% 52% 47% 50%;
+    background:
+        radial-gradient(circle at 35% 30%, #a84342, #681820 65%, #310b10);
+    border: 4px double #c77c65;
+    box-shadow:
+        0 0 12px #9b3030,
+        0 5px 10px #4b1717;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #f5d8a0;
+    font-size: 33px;
+}
+
+.seal::after {
+    content: "❧";
+    position: absolute;
+    font-size: 55px;
+    color: #e6c78a;
+    opacity: .65;
+}
+
+.seal span {
+    position: relative;
+    z-index: 2;
+}
+
+.envelope.open .flap {
+    t
