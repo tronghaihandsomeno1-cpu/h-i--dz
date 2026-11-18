@@ -1,4 +1,349 @@
-clip-path: polygon(0 0, 100% 0, 50% 62%);
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Memorable Yearbook - Đào Trọng Hải</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --gold: #d6ad62;
+    --gold-light: #fff0c5;
+    --gold-dark: #8f632e;
+    --cream: #f0dfc3;
+    --wine: #641b22;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+    min-height: 100vh;
+    background:
+        radial-gradient(ellipse at 8% 5%, #70502d 0%, transparent 34%),
+        radial-gradient(ellipse at 90% 85%, #44301c 0%, transparent 35%),
+        linear-gradient(135deg, #21170f, #090909 55%, #1c1510);
+    color: #f5e5c4;
+    font-family: Georgia, "Times New Roman", serif;
+    overflow-x: hidden;
+}
+
+/* =========================
+   NỀN VŨ TRỤ VÀ ÁNH SÁNG
+========================= */
+
+#stars, #shootingStars, #cursorDust {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+}
+
+#stars { z-index: 0; }
+#shootingStars { z-index: 2; overflow: hidden; }
+#cursorDust { z-index: 50; }
+
+.light-beam {
+    position: fixed;
+    top: -30%;
+    left: -15%;
+    width: 65%;
+    height: 100%;
+    background: linear-gradient(
+        120deg,
+        rgba(255,206,127,.22),
+        rgba(255,206,127,.05) 35%,
+        transparent 70%
+    );
+    filter: blur(30px);
+    transform: rotate(8deg);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.star {
+    position: absolute;
+    background: #ffe9b4;
+    border-radius: 50%;
+    box-shadow: 0 0 8px 3px rgba(217,169,81,.78), 0 0 18px rgba(255,239,190,.45);
+    animation: twinkle var(--twinkle-speed, 2s) ease-in-out infinite alternate;
+}
+
+.star::before,
+.star::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    background: rgba(255,245,214,.9);
+    transform: translate(-50%, -50%);
+    border-radius: 99px;
+    opacity: 0;
+    animation: starFlare var(--flare-speed, 3.2s) ease-in-out infinite;
+}
+.star::before { width: 1px; height: 15px; box-shadow: 0 0 5px #fff0c5; }
+.star::after { width: 15px; height: 1px; box-shadow: 0 0 5px #fff0c5; }
+
+@keyframes starFlare {
+    0%, 72%, 100% { opacity: 0; transform: translate(-50%, -50%) scale(.35); }
+    80%, 88% { opacity: .95; transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes twinkle {
+    from { opacity: .15; transform: scale(.6); }
+    to { opacity: 1; transform: scale(1.5); }
+}
+
+/* SAO BĂNG: CHỚP NHỎ -> BÙNG SÁNG -> TẮT DẦN, BAY CHÉO PHẢI SANG TRÁI */
+.shooting {
+    position: absolute;
+    width: var(--shoot-length, 230px);
+    height: var(--shoot-thickness, 2px);
+    border-radius: 999px;
+    transform-origin: left center;
+    transform: rotate(var(--shoot-angle, -24deg)) scaleX(.015);
+    opacity: 0;
+    background: linear-gradient(90deg,
+        rgba(255,255,255,1) 0%,
+        rgba(255,253,242,.98) 3%,
+        rgba(255,239,202,.88) 13%,
+        rgba(255,216,157,.56) 42%,
+        rgba(255,198,125,.18) 76%,
+        transparent 100%);
+    filter: blur(.12px);
+    will-change: transform, opacity, filter;
+    animation: meteorFlight var(--shoot-duration, 2.1s) linear forwards;
+}
+.shooting::before {
+    content: "";
+    position: absolute;
+    left: -2px;
+    top: 50%;
+    width: var(--shoot-head, 3px);
+    height: var(--shoot-head, 3px);
+    border-radius: 50%;
+    transform: translateY(-50%);
+    background: #fff;
+    opacity: .15;
+    box-shadow: 0 0 3px 1px #fff, 0 0 8px 3px rgba(255,239,190,.7);
+    animation: meteorCore var(--shoot-duration, 2.1s) linear forwards;
+}
+.shooting::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255,255,255,.9);
+    filter: blur(4px);
+    opacity: 0;
+    animation: meteorGlow var(--shoot-duration, 2.1s) linear forwards;
+}
+
+/* Vệt sáng không trượt đều: chấm sáng lóe lên, đuôi hình thành,
+   đạt cực sáng rồi co lại và tắt dần trước khi ra khỏi khung hình. */
+@keyframes meteorFlight {
+    0% {
+        opacity: 0;
+        transform: translate3d(0,0,0) rotate(var(--shoot-angle, -24deg)) scaleX(.015);
+        filter: blur(.5px);
+    }
+    8% {
+        opacity: .48;
+        transform: translate3d(calc(var(--shoot-x) * .06), calc(var(--shoot-y) * .06),0) rotate(var(--shoot-angle, -24deg)) scaleX(.035);
+        filter: blur(.15px);
+    }
+    32% {
+        opacity: 1;
+        transform: translate3d(calc(var(--shoot-x) * .34), calc(var(--shoot-y) * .34),0) rotate(var(--shoot-angle, -24deg)) scaleX(.78);
+        filter: blur(0);
+    }
+    56% {
+        opacity: .98;
+        transform: translate3d(calc(var(--shoot-x) * .62), calc(var(--shoot-y) * .62),0) rotate(var(--shoot-angle, -24deg)) scaleX(1.08);
+        filter: blur(0);
+    }
+    78% {
+        opacity: .58;
+        transform: translate3d(calc(var(--shoot-x) * .84), calc(var(--shoot-y) * .84),0) rotate(var(--shoot-angle, -24deg)) scaleX(.62);
+        filter: blur(.25px);
+    }
+    100% {
+        opacity: 0;
+        transform: translate3d(var(--shoot-x), var(--shoot-y),0) rotate(var(--shoot-angle, -24deg)) scaleX(.025);
+        filter: blur(1.2px);
+    }
+}
+@keyframes meteorCore {
+    0%, 5% { opacity: .08; transform: translateY(-50%) scale(.45); }
+    28%, 55% { opacity: 1; transform: translateY(-50%) scale(1.45); box-shadow: 0 0 7px 3px #fff, 0 0 18px 8px rgba(255,239,190,1), 0 0 35px 13px rgba(255,194,105,.65); }
+    78% { opacity: .62; transform: translateY(-50%) scale(.9); }
+    100% { opacity: 0; transform: translateY(-50%) scale(.12); }
+}
+@keyframes meteorGlow {
+    0%, 8% { opacity: 0; }
+    35%, 55% { opacity: .9; }
+    78% { opacity: .32; }
+    100% { opacity: 0; }
+}
+
+/* BỤI TIÊN THEO CHUỘT */
+
+.dust {
+    position: fixed;
+    color: #ffe4a0;
+    pointer-events: none;
+    text-shadow: 0 0 12px #ffdf8a;
+    animation: dustFly 1s ease-out forwards;
+}
+
+@keyframes dustFly {
+    0% {
+        opacity: 1;
+        transform: scale(1) translateY(0) rotate(0);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0) translateY(-40px) rotate(180deg);
+    }
+}
+
+/* =========================
+   ẢNH ĐÀO TRỌNG HẢI BAY
+========================= */
+
+.floating-face {
+    position: fixed;
+    width: 96px;
+    height: auto;
+    max-height: 130px;
+    object-fit: contain;
+    z-index: 90;
+    pointer-events: none;
+    filter: drop-shadow(0 0 13px rgba(255,220,145,.95)) drop-shadow(0 0 28px rgba(205,157,77,.6));
+    transition: top 6.2s cubic-bezier(.22,.61,.36,1), left 6.2s cubic-bezier(.22,.61,.36,1);
+    animation: faceRotate 6s ease-in-out infinite alternate;
+    will-change: top, left, transform;
+}
+
+@keyframes faceRotate {
+    from { transform: translateY(-5px) rotate(-8deg) scale(.97); }
+    to { transform: translateY(5px) rotate(8deg) scale(1.03); }
+}
+
+/* =========================
+   MÀN HÌNH PHONG BÌ
+========================= */
+
+#envelopeScreen {
+    position: relative;
+    z-index: 5;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 35px 15px;
+    overflow: hidden;
+}
+
+.small-heading {
+    color: #f0d39b;
+    letter-spacing: 7px;
+    font-size: 12px;
+    text-align: center;
+    margin-bottom: 35px;
+    text-shadow: 0 0 15px #d9a951;
+}
+
+.ornament {
+    width: min(550px, 90vw);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: #f5d394;
+    margin: 20px auto;
+}
+
+.ornament::before,
+.ornament::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #e7c17b);
+}
+
+.ornament::after {
+    background: linear-gradient(90deg, #e7c17b, transparent);
+}
+
+.ornament span {
+    font-size: 25px;
+    text-shadow: 0 0 15px #e9c879;
+}
+
+/* PHONG BÌ */
+
+.envelope {
+    position: relative;
+    width: min(470px, 89vw);
+    height: 275px;
+    background:
+        linear-gradient(135deg, #f6e7ce, #d9bd96 55%, #f4e2c3);
+    border: 2px solid #d7b77b;
+    border-radius: 3px;
+    box-shadow:
+        0 0 30px #e5bc7255,
+        0 20px 70px #000b,
+        inset 0 0 35px #fff5d3;
+    cursor: pointer;
+    transition: 1s;
+    perspective: 900px;
+}
+
+/* HỌA TIẾT VÂN GIẤY */
+
+.envelope::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: .18;
+    background:
+        repeating-linear-gradient(
+            45deg,
+            transparent 0px,
+            transparent 4px,
+            #9d7445 5px,
+            transparent 6px
+        );
+}
+
+/* ĐƯỜNG GẤP PHONG BÌ */
+
+.envelope::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(145deg, transparent 49.8%, #b18b58 50%, transparent 50.5%),
+        linear-gradient(215deg, transparent 49.8%, #b18b58 50%, transparent 50.5%);
+    z-index: 1;
+}
+
+/* NẮP THƯ */
+
+.flap {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(145deg, #fff0d6, #d8bb94);
+    clip-path: polygon(0 0, 100% 0, 50% 62%);
     transform-origin: top;
     transition: 1s;
     z-index: 3;
